@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { MEETING_ID } from "@/lib/meetingUtils";
 
 interface Phase1LandingProps {
   onJoinMeeting: () => void;
@@ -16,23 +17,24 @@ const Phase1Landing = ({ onJoinMeeting }: Phase1LandingProps) => {
         
         {/* Meeting Info */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-2">Join Meeting</h1>
-          <p className="text-gray-600 mb-1">Meeting ID: 123 456 7890</p>
-          <p className="text-gray-600 text-sm">Waiting for the host to start this meeting</p>
+          <h1 className="text-2xl font-semibold text-gray-800 mb-2">Supplier Onboarding Meeting</h1>
+          <p className="text-gray-600 mb-1">Meeting ID: {MEETING_ID}</p>
+          <p className="text-gray-600 text-sm">Waiting for Michael Chen to start this meeting</p>
         </div>
         
         {/* User Avatar */}
         <div className="flex justify-center mb-6">
           <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
             <div className="w-16 h-16 bg-blue-300 rounded-full flex items-center justify-center">
-              <span className="text-2xl font-semibold text-blue-600">U</span>
+              <span className="text-2xl font-semibold text-blue-600">MC</span>
             </div>
           </div>
         </div>
         
         {/* Name Display */}
         <div className="text-center mb-8">
-          <p className="text-lg font-medium text-gray-800">John Doe</p>
+          <p className="text-lg font-medium text-gray-800">Michael Chen</p>
+          <p className="text-sm text-gray-600">CEO, TechCorp Industries</p>
         </div>
         
         {/* Action Buttons */}

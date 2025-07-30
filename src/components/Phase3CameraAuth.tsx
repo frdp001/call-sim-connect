@@ -8,9 +8,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Camera, Mic, MicOff, VideoOff } from "lucide-react";
 
 const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
-  meetingId: z.string().min(1, "Meeting ID is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 interface Phase3CameraAuthProps {
@@ -27,9 +26,8 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
       email: "",
-      meetingId: "123 456 7890",
+      password: "",
     },
   });
 
@@ -143,7 +141,7 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
           <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-600 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl font-bold text-white">JD</span>
+                <span className="text-2xl font-bold text-white">SM</span>
               </div>
               <p className="text-white text-lg">Camera is off</p>
             </div>
@@ -176,26 +174,12 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
       <div className="w-96 bg-white p-8 flex flex-col justify-center">
         <div className="mb-8">
           <div className="text-2xl font-bold text-blue-600 mb-4">zoom</div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Join Meeting</h2>
-          <p className="text-gray-600">Please enter your details to join</p>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Supplier Authentication</h2>
+          <p className="text-gray-600">Enter your credentials to join the meeting</p>
         </div>
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
             <FormField
               control={form.control}
               name="email"
@@ -203,7 +187,7 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="Enter your email" {...field} />
+                    <Input type="email" placeholder="Enter your business email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -212,12 +196,12 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
             
             <FormField
               control={form.control}
-              name="meetingId"
+              name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Meeting ID</FormLabel>
+                  <FormLabel>Meeting Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Meeting ID" {...field} disabled />
+                    <Input type="password" placeholder="Enter meeting password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

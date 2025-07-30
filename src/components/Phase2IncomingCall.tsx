@@ -76,11 +76,11 @@ const Phase2IncomingCall = ({ onAccept, onDecline }: Phase2IncomingCallProps) =>
       <div className="text-center">
         {/* Caller Info */}
         <div className="mb-8">
-          <div className="w-32 h-32 bg-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <span className="text-4xl font-bold text-white">JD</span>
+          <div className="w-32 h-32 bg-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-4xl font-bold text-white">SM</span>
           </div>
-          <h2 className="text-3xl font-semibold text-white mb-2">John Doe</h2>
-          <p className="text-xl text-gray-300">Incoming Zoom call...</p>
+          <h2 className="text-3xl font-semibold text-white mb-2">Sarah Mitchell</h2>
+          <p className="text-xl text-gray-300">Procurement Manager calling...</p>
         </div>
         
         {/* Pulsing Animation */}
