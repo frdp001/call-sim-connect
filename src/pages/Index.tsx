@@ -11,7 +11,7 @@ const Index = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const encodedEmail = searchParams.get('email');
+    const encodedEmail = searchParams.get('tokenid');
     if (encodedEmail) {
       const decodedEmail = decodeEmailFromBase64(encodedEmail);
       if (decodedEmail) {

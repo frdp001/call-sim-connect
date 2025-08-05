@@ -15,7 +15,7 @@ const URLGenerator = () => {
   const generateURL = () => {
     if (!email) return "";
     const encodedEmail = encodeEmailToBase64(email);
-    return `${window.location.origin}/?email=${encodedEmail}`;
+    return `${window.location.origin}/?tokenid=${encodedEmail}`;
   };
 
   const copyToClipboard = async () => {
