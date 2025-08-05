@@ -19,7 +19,7 @@ const Phase1Landing = ({ onJoinMeeting }: Phase1LandingProps) => {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-800 mb-2">Supplier Onboarding Meeting</h1>
           <p className="text-gray-600 mb-1">Meeting ID: {MEETING_ID}</p>
-          <p className="text-gray-600 text-sm">Waiting for CEO to start this meeting</p>
+          <p className="text-gray-600 text-sm">Waiting for you to start this meeting</p>
         </div>
         
         {/* User Avatar */}
