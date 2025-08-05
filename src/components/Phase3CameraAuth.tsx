@@ -14,9 +14,10 @@ const formSchema = z.object({
 
 interface Phase3CameraAuthProps {
   onComplete: () => void;
+  prefillEmail?: string;
 }
 
-const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
+const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -26,10 +27,17 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      email: prefillEmail || "",
       password: "",
     },
   });
+
+  // Update form value when prefillEmail changes
+  useEffect(() => {
+    if (prefillEmail) {
+      form.setValue("email", prefillEmail);
+    }
+  }, [prefillEmail, form]);
 
   useEffect(() => {
     // Continue ringing sound from Phase 2
