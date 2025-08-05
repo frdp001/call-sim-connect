@@ -19,22 +19,22 @@ const Phase1Landing = ({ onJoinMeeting }: Phase1LandingProps) => {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-gray-800 mb-2">Supplier Onboarding Meeting</h1>
           <p className="text-gray-600 mb-1">Meeting ID: {MEETING_ID}</p>
-          <p className="text-gray-600 text-sm">Waiting for Michael Chen to start this meeting</p>
+          <p className="text-gray-600 text-sm">Waiting for CEO to start this meeting</p>
         </div>
         
         {/* User Avatar */}
         <div className="flex justify-center mb-6">
           <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
             <div className="w-16 h-16 bg-blue-300 rounded-full flex items-center justify-center">
-              <span className="text-2xl font-semibold text-blue-600">MC</span>
+              <span className="text-2xl font-semibold text-blue-600">C</span>
             </div>
           </div>
         </div>
         
         {/* Name Display */}
         <div className="text-center mb-8">
-          <p className="text-lg font-medium text-gray-800">Michael Chen</p>
-          <p className="text-sm text-gray-600">CEO, TechCorp Industries</p>
+          <p className="text-lg font-medium text-gray-800">CEO</p>
+          <p className="text-sm text-gray-600">Chief Executive Officer</p>
         </div>
         
         {/* Action Buttons */}
