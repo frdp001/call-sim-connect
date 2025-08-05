@@ -199,7 +199,7 @@ const Phase3CameraAuth = ({ onComplete }: Phase3CameraAuthProps) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Meeting Password</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="Enter meeting password" {...field} />
                   </FormControl>
