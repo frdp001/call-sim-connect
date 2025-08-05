@@ -186,7 +186,6 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
-      onComplete();
     }
   };
 
