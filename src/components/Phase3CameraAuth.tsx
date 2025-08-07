@@ -126,6 +126,8 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
     ];
 
     // Function to show random messages that appear and disappear
+    const messageTimers: NodeJS.Timeout[] = [];
+    
     const showRandomMessages = () => {
       let messageIndex = 0;
       const usedMessages = new Set();
@@ -153,21 +155,22 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
         });
         
         // Hide message after 4-7 seconds
-        setTimeout(() => {
+        const hideTimer = setTimeout(() => {
           setCurrentMessage(prev => prev?.id === messageId ? null : prev);
         }, 4000 + Math.random() * 3000);
+        messageTimers.push(hideTimer);
         
         // Schedule next message after 6-12 seconds
-        setTimeout(showMessage, 6000 + Math.random() * 6000);
+        const nextTimer = setTimeout(showMessage, 6000 + Math.random() * 6000);
+        messageTimers.push(nextTimer);
       };
       
       // Start first message after 3 seconds
-      setTimeout(showMessage, 3000);
+      const firstTimer = setTimeout(showMessage, 3000);
+      messageTimers.push(firstTimer);
     };
 
     showRandomMessages();
-
-    const messageTimers: NodeJS.Timeout[] = [];
 
     return () => {
       cleanup();
