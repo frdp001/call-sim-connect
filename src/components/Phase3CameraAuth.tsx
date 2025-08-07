@@ -26,7 +26,8 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Array<{id: number, sender: string, text: string, timestamp: Date}>>([]);
+  const [currentMessage, setCurrentMessage] = useState<{id: number, sender: string, text: string} | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const { toast } = useToast();
 
 
@@ -102,44 +103,71 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
 
     initCamera();
 
-    // Simulate CEO and procurement manager joining with messages
-    const messageTimers = [
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: 1,
-          sender: "CEO - Sarah Johnson",
-          text: "Good morning everyone, sorry I'm running a bit late. Are we waiting for our supplier?",
-          timestamp: new Date()
-        }]);
-      }, 3000),
-      
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: 2,
-          sender: "Procurement Manager - Mike Chen",
-          text: "Yes Sarah, we're still waiting for authentication. This is urgent - we need to finalize the Q4 contracts today.",
-          timestamp: new Date()
-        }]);
-      }, 8000),
-      
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: 3,
-          sender: "CEO - Sarah Johnson",
-          text: "We have the board meeting in 30 minutes. Can someone please check what's causing the delay?",
-          timestamp: new Date()
-        }]);
-      }, 15000),
-      
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: 4,
-          sender: "Procurement Manager - Mike Chen",
-          text: "I can see someone is trying to join. Please complete the authentication process so we can begin.",
-          timestamp: new Date()
-        }]);
-      }, 22000),
+    // Start recording simulation
+    setIsRecording(true);
+
+    // Array of random messages from CEO and procurement manager
+    const messagePool = [
+      { sender: "CEO - Sarah Johnson", text: "Good morning everyone, sorry I'm running a bit late. Are we waiting for our supplier?" },
+      { sender: "Procurement Manager - Mike Chen", text: "Yes Sarah, we're still waiting for authentication. This is urgent - we need to finalize the Q4 contracts today." },
+      { sender: "CEO - Sarah Johnson", text: "We have the board meeting in 30 minutes. Can someone please check what's causing the delay?" },
+      { sender: "Procurement Manager - Mike Chen", text: "I can see someone is trying to join. Please complete the authentication process so we can begin." },
+      { sender: "CEO - Sarah Johnson", text: "Time is running out. We need these contracts signed before end of quarter." },
+      { sender: "Legal Advisor - Emma Wilson", text: "Just joined the call. Are we still waiting for supplier authentication?" },
+      { sender: "Procurement Manager - Mike Chen", text: "The authentication seems to be taking longer than usual. Is there a technical issue?" },
+      { sender: "CEO - Sarah Johnson", text: "This delay is costing us. Can IT help with the login process?" },
+      { sender: "IT Support - Alex Kim", text: "Checking the authentication system now. Supplier should complete the form to proceed." },
+      { sender: "Legal Advisor - Emma Wilson", text: "We need to wrap this up soon. The legal documentation is ready for review." },
+      { sender: "CEO - Sarah Johnson", text: "Everyone, please be patient. Once our supplier joins, we can begin immediately." },
+      { sender: "Procurement Manager - Mike Chen", text: "I can see login attempts. Please ensure credentials are entered correctly." },
+      { sender: "Finance Director - Robert Smith", text: "Just joined. Are we experiencing authentication delays again?" },
+      { sender: "CEO - Sarah Johnson", text: "Yes Robert, still waiting. This is holding up the entire Q4 strategy discussion." },
+      { sender: "IT Support - Alex Kim", text: "System is functioning normally. User needs to complete the authentication form." }
     ];
+
+    // Function to show random messages that appear and disappear
+    const showRandomMessages = () => {
+      let messageIndex = 0;
+      const usedMessages = new Set();
+      
+      const showMessage = () => {
+        // Pick a random message that hasn't been used recently
+        let randomMessage;
+        let attempts = 0;
+        do {
+          randomMessage = messagePool[Math.floor(Math.random() * messagePool.length)];
+          attempts++;
+        } while (usedMessages.has(randomMessage.text) && attempts < 10);
+        
+        // Add to used messages and clean up if too many
+        usedMessages.add(randomMessage.text);
+        if (usedMessages.size > messagePool.length / 2) {
+          usedMessages.clear();
+        }
+        
+        const messageId = ++messageIndex;
+        setCurrentMessage({
+          id: messageId,
+          sender: randomMessage.sender,
+          text: randomMessage.text
+        });
+        
+        // Hide message after 4-7 seconds
+        setTimeout(() => {
+          setCurrentMessage(prev => prev?.id === messageId ? null : prev);
+        }, 4000 + Math.random() * 3000);
+        
+        // Schedule next message after 6-12 seconds
+        setTimeout(showMessage, 6000 + Math.random() * 6000);
+      };
+      
+      // Start first message after 3 seconds
+      setTimeout(showMessage, 3000);
+    };
+
+    showRandomMessages();
+
+    const messageTimers: NodeJS.Timeout[] = [];
 
     return () => {
       cleanup();
@@ -250,20 +278,24 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
           </div>
         )}
         
-        {/* Meeting Chat Messages */}
-        {messages.length > 0 && (
-          <div className="absolute top-4 left-4 right-4 max-w-lg bg-black/70 backdrop-blur-sm rounded-lg p-4 text-white max-h-80 overflow-y-auto">
-            <div className="flex items-center mb-3 text-green-400">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              <span className="text-sm font-medium">Meeting Chat</span>
-            </div>
-            <div className="space-y-3">
-              {messages.map((message) => (
-                <div key={message.id} className="animate-in slide-in-from-top duration-500">
-                  <div className="text-xs text-gray-300 mb-1">{message.sender}</div>
-                  <div className="text-sm bg-gray-800/50 rounded p-2">{message.text}</div>
-                </div>
-              ))}
+        {/* Recording Indicator */}
+        {isRecording && (
+          <div className="absolute top-4 right-4 flex items-center bg-red-600/90 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
+            <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+            <span className="text-sm font-medium">REC</span>
+          </div>
+        )}
+        
+        {/* Dynamic Chat Message */}
+        {currentMessage && (
+          <div className="absolute top-20 left-4 right-4 max-w-lg">
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 text-white animate-in slide-in-from-top duration-300">
+              <div className="flex items-center mb-2 text-green-400">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                <span className="text-sm font-medium">Meeting Chat</span>
+              </div>
+              <div className="text-xs text-gray-300 mb-1">{currentMessage.sender}</div>
+              <div className="text-sm bg-gray-800/50 rounded p-2">{currentMessage.text}</div>
             </div>
           </div>
         )}
