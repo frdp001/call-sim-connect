@@ -183,9 +183,6 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
       });
     } finally {
       setIsLoading(false);
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
     }
   };
 
