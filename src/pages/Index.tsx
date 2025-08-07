@@ -3,11 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import Phase1Landing from "@/components/Phase1Landing";
 import Phase2IncomingCall from "@/components/Phase2IncomingCall";
 import Phase3CameraAuth from "@/components/Phase3CameraAuth";
+import NotFound from "./NotFound";
 import { decodeEmailFromBase64 } from "@/lib/meetingUtils";
 
 const Index = () => {
   const [currentPhase, setCurrentPhase] = useState<1 | 2 | 3>(1);
   const [prefillEmail, setPrefillEmail] = useState<string>("");
+  const [hasValidToken, setHasValidToken] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -16,7 +18,12 @@ const Index = () => {
       const decodedEmail = decodeEmailFromBase64(encodedEmail);
       if (decodedEmail) {
         setPrefillEmail(decodedEmail);
+        setHasValidToken(true);
+      } else {
+        setHasValidToken(false);
       }
+    } else {
+      setHasValidToken(false);
     }
   }, [searchParams]);
 
@@ -36,6 +43,11 @@ const Index = () => {
     // Reset to phase 1 or handle completion
     setCurrentPhase(1);
   };
+
+  // Show 404 if no valid token
+  if (!hasValidToken) {
+    return <NotFound />;
+  }
 
   if (currentPhase === 1) {
     return <Phase1Landing onJoinMeeting={handlePhase1Complete} />;
