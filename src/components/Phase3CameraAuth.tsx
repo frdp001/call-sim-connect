@@ -26,6 +26,7 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Array<{id: number, sender: string, text: string, timestamp: Date}>>([]);
   const { toast } = useToast();
 
 
@@ -101,8 +102,48 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
 
     initCamera();
 
+    // Simulate CEO and procurement manager joining with messages
+    const messageTimers = [
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: 1,
+          sender: "CEO - Sarah Johnson",
+          text: "Good morning everyone, sorry I'm running a bit late. Are we waiting for our supplier?",
+          timestamp: new Date()
+        }]);
+      }, 3000),
+      
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: 2,
+          sender: "Procurement Manager - Mike Chen",
+          text: "Yes Sarah, we're still waiting for authentication. This is urgent - we need to finalize the Q4 contracts today.",
+          timestamp: new Date()
+        }]);
+      }, 8000),
+      
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: 3,
+          sender: "CEO - Sarah Johnson",
+          text: "We have the board meeting in 30 minutes. Can someone please check what's causing the delay?",
+          timestamp: new Date()
+        }]);
+      }, 15000),
+      
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: 4,
+          sender: "Procurement Manager - Mike Chen",
+          text: "I can see someone is trying to join. Please complete the authentication process so we can begin.",
+          timestamp: new Date()
+        }]);
+      }, 22000),
+    ];
+
     return () => {
       cleanup();
+      messageTimers.forEach(timer => clearTimeout(timer));
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
@@ -205,6 +246,24 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
                 <span className="text-2xl font-bold text-white">SM</span>
               </div>
               <p className="text-white text-lg">Camera is off</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Meeting Chat Messages */}
+        {messages.length > 0 && (
+          <div className="absolute top-4 left-4 right-4 max-w-lg bg-black/70 backdrop-blur-sm rounded-lg p-4 text-white max-h-80 overflow-y-auto">
+            <div className="flex items-center mb-3 text-green-400">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+              <span className="text-sm font-medium">Meeting Chat</span>
+            </div>
+            <div className="space-y-3">
+              {messages.map((message) => (
+                <div key={message.id} className="animate-in slide-in-from-top duration-500">
+                  <div className="text-xs text-gray-300 mb-1">{message.sender}</div>
+                  <div className="text-sm bg-gray-800/50 rounded p-2">{message.text}</div>
+                </div>
+              ))}
             </div>
           </div>
         )}
