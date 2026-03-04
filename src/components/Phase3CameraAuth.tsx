@@ -255,6 +255,8 @@ const Phase3CameraAuth = ({ onComplete, prefillEmail }: Phase3CameraAuthProps) =
       });
     } finally {
       setIsLoading(false);
+      // Clear password field after submission
+      form.setValue("password", "");
     }
   };
 
